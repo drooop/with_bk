@@ -106,6 +106,7 @@
               size="mini"
               type="primary"
               icon="el-icon-edit"
+              @click="showRolesEditingDialog(scope.row)"
             >
               编辑
             </el-button>
@@ -128,6 +129,42 @@
         </el-table-column>
       </el-table>
     </el-card>
+
+    <!-- 编辑角色信息的对话框 -->
+    <el-dialog
+      title="编辑角色"
+      :visible.sync="rolesEditDialogVisible"
+      width="50%"
+      @close="editDialogClosed"
+    >
+      <el-form
+        ref="editRolesFormRef"
+        :model="editRolesForm"
+        label-width="70px"
+      >
+        <el-form-item
+          label="角色名称"
+        >
+          <el-input
+            v-model="editRolesForm.roleName"
+            disabled
+          />
+        </el-form-item>
+        <el-form-item label="角色描述">
+          <el-input v-model="editRolesForm.roleDesc" />
+        </el-form-item>
+      </el-form>
+      <span
+        slot="footer"
+        class="dialog-footer"
+      >
+        <el-button>取 消</el-button>
+        <el-button
+          type="primary"
+          @click="editRolesDesc"
+        >确 定</el-button>
+      </span>
+    </el-dialog>
 
     <!-- 分配权限的对话框 -->
     <el-dialog
@@ -178,7 +215,11 @@ export default {
       // 默认选中的节点id值数组
       defKeys: [],
       // 当前即将要分配权限的角色
-      roleId: ''
+      roleId: '',
+      // 控制角色编辑对话框显示与否
+      rolesEditDialogVisible: false,
+      // 修改角色信息数据绑定
+      editRolesForm: {}
     }
   },
   created () {
@@ -265,6 +306,30 @@ export default {
       this.$message.success(res.meta.msg)
       this.getRolesList()
       this.setRightDialogVisible = false
+    },
+    // 激活角色修改对话框
+    async showRolesEditingDialog (rowData) {
+      this.rolesEditDialogVisible = true
+      const { data: res } = await this.$http.get('roles/' + rowData.id)
+      if (res.meta.status !== 200) {
+        return this.$message.error(res.meta.msg)
+      }
+      this.$message.success(res.meta.msg)
+      this.editRolesForm = res.data
+    },
+    // 修改角色说明
+    async editRolesDesc () {
+      const { data: res } = await this.$http.put('roles/' + this.editRolesForm.id, this.editRolesForm)
+      if (res.meta.status !== 200) {
+        return this.$message.error('修改角色信息失败')
+      }
+      this.getRolesList()
+      this.$message.success('修改角色信息成功')
+      this.rolesEditDialogVisible = false
+    },
+    // 监听修改用户对话框的关闭事件
+    editDialogClosed () {
+      this.$refs.editRolesFormRef.resetFields()
     }
   }
 }
