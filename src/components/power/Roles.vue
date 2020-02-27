@@ -99,7 +99,7 @@
         />
         <el-table-column
           label="操作"
-          width="300px"
+          width="333px"
         >
           <template v-slot="scope">
             <el-button
