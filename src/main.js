@@ -5,6 +5,9 @@ import './plugins/element.js'
 // 导入全局样式表
 import './assets/css/global.css'
 
+// 导入vue-table-tree-grid
+import ZkTable from 'vue-table-with-tree-grid'
+
 // babel-polyfill 低版本兼容 axios请求
 // import 'babel-polyfill'
 
@@ -20,6 +23,8 @@ axios.interceptors.request.use(config => {
 Vue.prototype.$http = axios
 
 Vue.config.productionTip = false
+
+Vue.component('tree-table', ZkTable)
 
 new Vue({
   router,
