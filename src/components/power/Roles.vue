@@ -114,6 +114,7 @@
               size="mini"
               type="danger"
               icon="el-icon-delete"
+              @click="removeRoleById(scope.row.id)"
             >
               删除
             </el-button>
@@ -158,7 +159,7 @@
         slot="footer"
         class="dialog-footer"
       >
-        <el-button>取 消</el-button>
+        <el-button @click="rolesEditDialogVisible = false">取 消</el-button>
         <el-button
           type="primary"
           @click="editRolesDesc"
@@ -319,7 +320,12 @@ export default {
     },
     // 修改角色说明
     async editRolesDesc () {
-      const { data: res } = await this.$http.put('roles/' + this.editRolesForm.id, this.editRolesForm)
+      const { data: res } = await this.$http.put(`roles/${this.editRolesForm.roleId}`,
+        {
+          roleName: this.editRolesForm.roleName,
+          roleDesc: this.editRolesForm.roleDesc
+        })
+
       if (res.meta.status !== 200) {
         return this.$message.error('修改角色信息失败')
       }
@@ -329,7 +335,24 @@ export default {
     },
     // 监听修改用户对话框的关闭事件
     editDialogClosed () {
-      this.$refs.editRolesFormRef.resetFields()
+      // this.$refs.editRolesFormRef.resetFields()
+    },
+    // 根据角色id删除对应的角色
+    async removeRoleById (id) {
+      // 弹窗提示用户，询问用户是否确认删除动作
+      const confirmResult = await this.$confirm('此操作将永久删除该角色, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).catch(err => err)
+
+      if (confirmResult !== 'confirm') {
+        return this.$message.info('已取消删除')
+      }
+      const { data: res } = await this.$http.delete(`roles/${id}`)
+      if (res.meta.status !== 200) return this.$message.error('删除失败')
+      this.$message.success(res.meta.msg)
+      this.getRolesList()
     }
   }
 }
