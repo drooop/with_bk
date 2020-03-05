@@ -136,7 +136,7 @@
           ref="addFormRef"
           :model="addForm"
           :rules="addFormRules"
-          label-width="70px"
+          label-width="100px"
         >
           <el-form-item
             label="用户名称"
@@ -313,7 +313,7 @@ export default {
       // 添加表单的验证规则对象
       addFormRules: {
         username: [
-          { require: true, message: '请输入用户名', trigger: 'blur' },
+          { required: true, message: '请输入用户名', trigger: 'blur' },
           {
             min: 3,
             max: 10,
@@ -322,7 +322,7 @@ export default {
           }
         ],
         password: [
-          { require: true, message: '请输入密码', trigger: 'blur' },
+          { required: true, message: '请输入密码', trigger: 'blur' },
           {
             min: 6,
             max: 15,
@@ -331,12 +331,12 @@ export default {
           }
         ],
         email: [
-          { require: true, message: '请输入邮箱', trigger: 'blur' },
+          { required: true, message: '请输入邮箱', trigger: 'blur' },
           { validator: checkEmail, trigger: 'blur' }
 
         ],
         mobile: [
-          { require: true, message: '请输入手机号码', trigger: 'blur' },
+          { required: true, message: '请输入手机号码', trigger: 'blur' },
           { validator: checkMobile, trigger: 'blur' }
 
         ]
@@ -344,12 +344,12 @@ export default {
       // 修改表单的验证规则
       editFormRules: {
         email: [
-          { require: true, message: '请输入邮箱地址', trigger: 'blur' },
+          { required: true, message: '请输入邮箱地址', trigger: 'blur' },
           { validator: checkEmail, trigger: 'blur' }
 
         ],
         mobile: [
-          { require: true, message: '请输入手机号码', trigger: 'blur' },
+          { required: true, message: '请输入手机号码', trigger: 'blur' },
           { validator: checkMobile, trigger: 'blur' }
 
         ]

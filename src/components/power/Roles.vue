@@ -12,7 +12,10 @@
     <el-card>
       <el-row>
         <el-col>
-          <el-button type="primary">
+          <el-button
+            type="primary"
+            @click="showAddRoleDialog"
+          >
             添加角色
           </el-button>
         </el-col>
@@ -195,6 +198,42 @@
         >确 定</el-button>
       </span>
     </el-dialog>
+    <!-- 添加角色的对话框 -->
+    <el-dialog
+      title="分配权限"
+      :visible.sync="addRoleDialogVisible"
+      width="50%"
+    >
+      <el-form
+        ref="addRoleDialogRef"
+        :model="addRoleDialogForm"
+        :rules="addRoleDialogRules"
+        label-width="100px"
+      >
+        <el-form-item
+          label="角色名称"
+          prop="roleName"
+        >
+          <el-input v-model="addRoleDialogForm.roleName" />
+        </el-form-item>
+        <el-form-item
+          label="角色描述"
+          prop="roleDesc"
+        >
+          <el-input v-model="addRoleDialogForm.roleDesc" />
+        </el-form-item>
+      </el-form>
+      <span
+        slot="footer"
+        class="dialog-footer"
+      >
+        <el-button @click="addRoleDialogVisible = false">取 消</el-button>
+        <el-button
+          type="primary"
+          @click="updateRole"
+        >确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -220,7 +259,23 @@ export default {
       // 控制角色编辑对话框显示与否
       rolesEditDialogVisible: false,
       // 修改角色信息数据绑定
-      editRolesForm: {}
+      editRolesForm: {},
+      // 控制添加角色的对话框显示与否
+      addRoleDialogVisible: false,
+      // 添加用户对话框表单数据
+      addRoleDialogForm: {
+        roleName: '',
+        roleDesc: ''
+      },
+      // 添加用户对话框表单验证规则对象
+      addRoleDialogRules: {
+        roleName: [
+          { required: true, msg: '请输入角色名称', trigger: 'blur' }
+        ],
+        roleDesc: [
+          { required: true, msg: '请输入角色说明', trigger: 'blur' }
+        ]
+      }
     }
   },
   created () {
@@ -353,7 +408,27 @@ export default {
       if (res.meta.status !== 200) return this.$message.error('删除失败')
       this.$message.success(res.meta.msg)
       this.getRolesList()
+    },
+    // 添加角色后,确认新的角色列表
+    updateRole () {
+      this.$refs.addRoleDialogRef.validate(async valid => {
+        // 如果预校验失败,直接返回
+        if (!valid) return
+        // 可以发起添加角色请求
+        const { data: res } = await this.$http.post('roles', this.addRoleDialogForm)
+        if (res.meta.status !== 201) {
+          return this.$message.error('添加角色失败')
+        }
+        this.$message.success(res.meta.msg)
+        this.getRolesList()
+        this.addRoleDialogVisible = false
+      })
+    },
+    // 弹出添加角色对话框
+    showAddRoleDialog () {
+      this.addRoleDialogVisible = true
     }
+
   }
 }
 </script>
